@@ -1,0 +1,78 @@
+CREATE TABLE users(id serial PRIMARY KEY,
+		user_name varchar2(100) NOT NULL,
+		ph_no varchar2(20));
+CREATE TABLE order(id serial,
+	res_id UNIQUE,
+	order_id int NOT NULL,
+	product_id int NOT NULL,
+	quantity int NOT NULL,
+	PRIMARY KEY(id),FOREIGN KEY(order_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(product_id) REFERENCES products(id),FOREIGN KEY(product_id) REFERENCES restaurants(res_id) ON DELETE CASCADE);
+CREATE TABLE products(id serial PRIMARY KEY,
+	order_id int NOT NULL,
+	product_id int NOT NULL,
+	product_name varchar(50));
+CREATE TABLE delivery(id serial,
+	delivery_id int UNIQUE,
+	del_boy varchar2(100),
+	num varchar2(20),
+	order_id int NOT NULL,
+	product_id int NOT NULL,
+	delivery_time TIMESTAMP,
+	PRIMARY KEY(id),FOREIGN KEY(order_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(product_id) REFERENCES products(id),FOREIGN KEY(res_id) REFERENCES restaurants(del_id) ON DELETE CASCADE);
+CREATE TABLE restaurants(res_id PRIMARY KEY,
+	del_id serial,
+	order_id int NOT NULL,
+	product_id int NOT NULL,
+	quantity int NOT NULL,
+	est_time Time(0),
+	FOREIGN KEY(order_id) REFERENCES users(id) ON DELETE CASCADE,FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE);
+CREATE TABLE reviews(id serial,
+	product_id int NOT NULL,
+	rating int,
+	PRIMARY KEY(id)FOREIGN KEY(product_id) REFERENCES products(id) ON DELETE CASCADE);
+
+
+INSERT INTO users(id,user_name,ph_no) VALUES(101,'Sam',9789456734);
+INSERT INTO users(id,user_name,ph_no) VALUES(102,'anitha',8789456734);
+INSERT INTO users(id,user_name,ph_no) VALUES(103,'preethi',977776734);
+INSERT INTO users(id,user_name,ph_no) VALUES(104,'Sarah',7789456734);
+INSERT INTO users(id,user_name,ph_no) VALUES(105,'Samuel',8989456734);
+
+INSERT INTO order(id,res_id ,order_id ,product_id ,quantity) VALUES(101,401,520,3);
+INSERT INTO order(id,res_id,order_id ,product_id ,quantity) VALUES(102,402,220,6);
+INSERT INTO order(id,res_id,order_id ,product_id ,quantity) VALUES(103,403,550,1);
+INSERT INTO order(id,res_id,order_id ,product_id ,quantity) VALUES(104,404,620,2);
+INSERT INTO order(id,res_id,order_id ,product_id ,quantity) VALUES(105,405,920,3);
+
+INSERT INTO products(id  ,order_id ,product_id,product_name) VALUES(101,401,520,'burger');
+INSERT INTO products(id  ,order_id ,product_id,product_name) VALUES(102,402,220,'pizza');
+INSERT INTO products(id  ,order_id ,product_id,product_name) VALUES(103,403,550,'parotta');
+INSERT INTO products(id  ,order_id ,product_id,product_name) VALUES(104,404,620,'sandwich');
+INSERT INTO products(id  ,order_id ,product_id,product_name) VALUES(105,405,920,'fried rice');
+
+
+INSERT INTO delivery(id,delivery_id,del_boy,num,order_id ,product_id ,delivery_time) VALUES(101,660,'ramesh',9003882297,401,'2019-10-22',10:09:00');
+INSERT INTO delivery(id,delivery_id,del_boy,num,order_id ,product_id ,delivery_time) VALUES(102,661,'suresh',9789475176,402,'2019-10-21',14:11:49');
+INSERT INTO delivery(id,delivery_id,del_boy,num,order_id ,product_id ,delivery_time) VALUES(103,662,403,'karthik',9566951586,'2019-10-27',23:34:26');
+INSERT INTO delivery(id,delivery_id,del_boy,num,order_id ,product_id ,delivery_time) VALUES(104,663,404,'prem',9500298231,'2019-10-23',20:53:07');
+INSERT INTO delivery(id,delivery_id,del_boy,num,order_id ,product_id ,delivery_time) VALUES(105,664,405,'faizal',9003556789,'2019-10-25',08:59:00');
+
+INSERT INTO restaurants(res_id,del_id,order_id,product_id ,quantity ,est_time) VALUES(20,660,401,520,3,'14:09:00');
+INSERT INTO restaurants(res_id,del_id,order_id,product_id ,quantity ,est_time) VALUES(30,661,402,220,6,'15:16:00');
+INSERT INTO restaurants(res_id,del_id,order_id,product_id ,quantity ,est_time) VALUES(22,662,403,550,1,'19:45:00');
+INSERT INTO restaurants(res_id,del_id,order_id,product_id ,quantity ,est_time) VALUES(26,663,404,620,2,'08:09:00');
+INSERT INTO restaurants(res_id,del_id,order_id,product_id ,quantity ,est_time) VALUES(58,664,405,920,3,'10:06:00');
+
+INSERT INTO reviews(id,product_id,rating) VALUES(101,520,4);
+INSERT INTO reviews(id,product_id,rating) VALUES(102,220,3);
+INSERT INTO reviews(id,product_id,rating) VALUES(103,550,5);
+INSERT INTO reviews(id,product_id,rating) VALUES(104,620,5);
+INSERT INTO reviews(id,product_id,rating) VALUES(105,920,4);
+
+QUERIES:
+
+1. SELECT count(*) FROM users;
+2. SELECT delivery_id,del_boy,num FROM delivery;
+3. SELECT c.* FROM users c,order o,deliver d WHERE c.id=o.id AND o.id=d.id GROUP BY o.id,d.delivery_time HAVING count(o.id)>10 AND MONTH(delivery_time)=1;
+4. SELECT d.* FROM delivery INNER JOIN reviews r ON r.id=d.id ORDER BY d.delivery_time desc AND r.rating desc;
+5. SELECT * FROM users u INNER JOIN order o ON u.id=o.id INNER JOIN restaurant r ON r.res_id=o.res_id GROUP BY r.res_id HAVING count(r.res_id)>3 AND WEEK("2019-10-22",0);
